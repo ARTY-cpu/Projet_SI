@@ -1,0 +1,74 @@
+{
+  "_type": "Project",
+  "name": "SystemeEvaluationEnseignants",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "name": "Model",
+      "ownedElements": [
+        {
+          "_type": "UMLUseCaseDiagram",
+          "name": "Diagramme de cas d’utilisation – Évaluation des enseignants",
+          "ownedElements": [
+            {
+              "_type": "UMLActor",
+              "name": "Étudiant"
+            },
+            {
+              "_type": "UMLActor",
+              "name": "Enseignant"
+            },
+            {
+              "_type": "UMLActor",
+              "name": "Administrateur"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Remplir une évaluation"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Soumettre l’évaluation"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Consulter évaluations passées"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Consulter ses évaluations"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Lire commentaires anonymes"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Répondre aux commentaires"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Créer un formulaire d’évaluation"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Gérer les questions"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Configurer l’anonymat"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Consulter résultats globaux"
+            },
+            {
+              "_type": "UMLUseCase",
+              "name": "Générer rapports"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
