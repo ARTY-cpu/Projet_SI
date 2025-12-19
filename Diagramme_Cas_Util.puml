@@ -1,37 +1,63 @@
 @startuml "Système d'évaluation des enseignants"
+
 left to right direction
 skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam actorBackgroundColor #E3F2FD
+skinparam actorBorderColor #1976D2
+skinparam usecaseBackgroundColor #FFFFFF
+skinparam usecaseBorderColor #424242
+skinparam arrowColor #424242
 
-' Définition des acteurs
+'═══════════════════════════════════════════════════════════════
+' ACTEURS PRINCIPAUX
+'═══════════════════════════════════════════════════════════════
+
 actor "Étudiant" as Etudiant
 actor "Enseignant" as Enseignant
 actor "Administrateur\n(Responsable pédagogique)" as Admin
 
-' Acteurs secondaires
-actor "Système de notification" as SysNotif
-actor "Base de données" as BDD
+'═══════════════════════════════════════════════════════════════
+' ACTEURS SECONDAIRES
+'═══════════════════════════════════════════════════════════════
 
-' Package du système
+actor "Système de\nnotification" as SysNotif
+actor "Base de\ndonnées" as BDD
+
+'═══════════════════════════════════════════════════════════════
+' SYSTÈME
+'═══════════════════════════════════════════════════════════════
+
 rectangle "Système d'évaluation des enseignants" {
   
-  ' Cas d'utilisation - Gestion des évaluations
-  package "Gestion des évaluations" {
-    usecase "Remplir une évaluation" as UC1
-    usecase "Consulter ses évaluations\nantérieures" as UC2
-    usecase "Soumettre des commentaires\nanonymes" as UC3
+  '─────────────────────────────────────────────────────────────
+  ' GESTION DES ÉVALUATIONS
+  '─────────────────────────────────────────────────────────────
+  
+  package "Gestion des évaluations" #E6F3FF {
+    usecase "Remplir une\névaluation" as UC1
+    usecase "Consulter ses\névaluations antérieures" as UC2
+    usecase "Soumettre des\ncommentaires anonymes" as UC3
   }
   
-  ' Cas d'utilisation - Consultation des résultats
-  package "Consultation des résultats" {
-    usecase "Consulter ses évaluations\npersonnelles" as UC4
+  '─────────────────────────────────────────────────────────────
+  ' CONSULTATION DES RÉSULTATS
+  '─────────────────────────────────────────────────────────────
+  
+  package "Consultation des résultats" #E8F5E9 {
+    usecase "Consulter ses\névaluations personnelles" as UC4
     usecase "Interagir avec les\ncommentaires anonymes" as UC5
     usecase "Visualiser le tableau\nde bord interactif" as UC6
     usecase "Consulter tous les\ncommentaires" as UC7
-    usecase "Suivre l'évolution des\nperformances" as UC8
+    usecase "Suivre l'évolution\ndes performances" as UC8
   }
   
-  ' Cas d'utilisation - Administration
-  package "Administration du système" {
+  '─────────────────────────────────────────────────────────────
+  ' ADMINISTRATION
+  '─────────────────────────────────────────────────────────────
+  
+  package "Administration du système" #FFE4B5 {
     usecase "Gérer les paramètres\ndu système" as UC9
     usecase "Créer des formulaires\nd'évaluation" as UC10
     usecase "Créer des questions" as UC11
@@ -39,28 +65,42 @@ rectangle "Système d'évaluation des enseignants" {
     usecase "Gérer les données\ndes étudiants" as UC13
     usecase "Compiler des rapports\ncomplets" as UC14
     usecase "Configurer le niveau\nd'anonymat" as UC15
-    usecase "Remplir des évaluations" as UC16
+    usecase "Remplir des\névaluations" as UC16
   }
   
-  ' Cas d'utilisation - Fonctionnalités transverses
-  package "Fonctionnalités système" {
-    usecase "Garantir l'anonymat" as UC17
+  '─────────────────────────────────────────────────────────────
+  ' FONCTIONNALITÉS SYSTÈME
+  '─────────────────────────────────────────────────────────────
+  
+  package "Fonctionnalités système" #F5F5F5 {
+    usecase "Garantir\nl'anonymat" as UC17
     usecase "Assurer la compatibilité\nmobile" as UC18
-    usecase "Envoyer des notifications" as UC19
-    usecase "Sauvegarder les données" as UC20
+    usecase "Envoyer des\nnotifications" as UC19
+    usecase "Sauvegarder\nles données" as UC20
   }
 }
 
-' Relations Étudiant
+'═══════════════════════════════════════════════════════════════
+' RELATIONS - ÉTUDIANT
+'═══════════════════════════════════════════════════════════════
+
 Etudiant --> UC1
 Etudiant --> UC2
 Etudiant --> UC3
 
-' Relations Enseignant
+'═══════════════════════════════════════════════════════════════
+' RELATIONS - ENSEIGNANT
+'═══════════════════════════════════════════════════════════════
+
 Enseignant --> UC4
 Enseignant --> UC5
 
-' Relations Administrateur (hérite des droits enseignant)
+'═══════════════════════════════════════════════════════════════
+' RELATIONS - ADMINISTRATEUR
+'═══════════════════════════════════════════════════════════════
+
+Admin --> UC4
+Admin --> UC5
 Admin --> UC6
 Admin --> UC7
 Admin --> UC8
@@ -73,41 +113,55 @@ Admin --> UC14
 Admin --> UC15
 Admin --> UC16
 
-' L'administrateur peut aussi consulter comme un enseignant
-Admin --> UC4
-Admin --> UC5
+'═══════════════════════════════════════════════════════════════
+' RELATIONS ENTRE CAS D'UTILISATION
+'═══════════════════════════════════════════════════════════════
 
-' Relations entre cas d'utilisation (include et extend)
+' Relations <<include>>
 UC1 ..> UC17 : <<include>>
 UC3 ..> UC17 : <<include>>
 UC1 ..> UC18 : <<include>>
 UC6 ..> UC18 : <<include>>
-
 UC10 ..> UC11 : <<include>>
 UC1 ..> UC20 : <<include>>
 UC14 ..> UC20 : <<include>>
 
+' Relations <<extend>>
 UC5 ..> UC19 : <<extend>>
 UC1 ..> UC19 : <<extend>>
 
-' Relations avec acteurs secondaires
+'═══════════════════════════════════════════════════════════════
+' RELATIONS AVEC ACTEURS SECONDAIRES
+'═══════════════════════════════════════════════════════════════
+
 UC17 --> BDD
 UC20 --> BDD
 UC19 --> SysNotif
 
-' Notes explicatives
+'═══════════════════════════════════════════════════════════════
+' NOTES EXPLICATIVES
+'═══════════════════════════════════════════════════════════════
+
 note right of UC17
+  <b>Anonymat configurable</b>
+  ──────────────────────
   Le niveau d'anonymat est
   configurable par l'administrateur
+  pour encourager l'honnêteté
 end note
 
 note right of UC6
+  <b>Tableau de bord</b>
+  ──────────────────────
   Affiche les résultats d'évaluation
   et l'évolution des performances
+  dans le temps
 end note
 
-note right of UC10
-  Système de génération dynamique
+note bottom of UC10
+  <b>Génération dynamique</b>
+  ──────────────────────
+  Système de génération
   de formulaires personnalisés
 end note
 
