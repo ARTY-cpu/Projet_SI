@@ -1,0 +1,273 @@
+@startuml "UC1 - Remplir une évaluation (MVC)"
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam BoxPadding 10
+
+title Diagramme de séquence - UC1 : Remplir une évaluation\n(Architecture MVC avec scénario idéal et alternatives)
+
+'═══════════════════════════════════════════════════════════════
+' ACTEURS ET COMPOSANTS MVC
+'═══════════════════════════════════════════════════════════════
+
+actor "Étudiant" as Etudiant
+box "Couche Présentation (Vue)" #E3F2FD
+  participant "PageEvaluation\n(Vue)" as Vue
+  participant "FormulaireMobile\n(Vue Mobile)" as VueMobile
+end box
+
+box "Couche Métier (Contrôleur)" #FFF9C4
+  participant "EvaluationController" as Controller
+  participant "AnonymatService" as AnonymatSvc
+  participant "NotificationService" as NotifSvc
+end box
+
+box "Couche Données (Modèle)" #E8F5E9
+  participant "EvaluationModel" as Model
+  participant "QuestionModel" as QuestionModel
+  participant "ReponsesModel" as ReponsesModel
+end box
+
+database "Base de données" as BDD
+
+'═══════════════════════════════════════════════════════════════
+' SCÉNARIO IDÉAL - Évaluation complète et soumise avec succès
+'═══════════════════════════════════════════════════════════════
+
+== Scénario Idéal : Soumission complète de l'évaluation ==
+
+Etudiant -> Vue : 1. Accède à la page d'évaluation
+activate Vue
+
+Vue -> Controller : 2. demanderFormulaireEvaluation(idEnseignant, idCours)
+activate Controller
+
+Controller -> Model : 3. recupererFormulaireActif(idCours)
+activate Model
+
+Model -> BDD : 4. SELECT * FROM formulaires\nWHERE cours_id = ? AND actif = true
+activate BDD
+BDD --> Model : 5. Données formulaire
+deactivate BDD
+
+Model --> Controller : 6. FormulaireEvaluation
+deactivate Model
+
+Controller -> QuestionModel : 7. recupererQuestions(idFormulaire)
+activate QuestionModel
+
+QuestionModel -> BDD : 8. SELECT * FROM questions\nWHERE formulaire_id = ?
+activate BDD
+BDD --> QuestionModel : 9. Liste des questions
+deactivate BDD
+
+QuestionModel --> Controller : 10. Questions[]
+deactivate QuestionModel
+
+Controller --> Vue : 11. Formulaire + Questions
+deactivate Controller
+
+Vue --> Etudiant : 12. Affiche le formulaire d'évaluation
+deactivate Vue
+
+...L'étudiant remplit le formulaire...
+
+Etudiant -> Vue : 13. Remplit toutes les questions obligatoires
+activate Vue
+
+Etudiant -> Vue : 14. Ajoute des commentaires anonymes (optionnel)
+
+Etudiant -> Vue : 15. Clique sur "Soumettre l'évaluation"
+
+Vue -> Controller : 16. soumettreEvaluation(donneesEvaluation)
+activate Controller
+
+' Validation des données
+Controller -> Controller : 17. validerCompletude(donneesEvaluation)
+note right : Vérifie que toutes les\nquestions obligatoires\nsont remplies
+
+' Garantie de l'anonymat
+Controller -> AnonymatSvc : 18. garantirAnonymat(donneesEvaluation)
+activate AnonymatSvc
+
+AnonymatSvc -> BDD : 19. Vérifie configuration anonymat
+activate BDD
+BDD --> AnonymatSvc : 20. Niveau d'anonymat
+deactivate BDD
+
+AnonymatSvc -> AnonymatSvc : 21. Anonymise les données\n(supprime métadonnées identifiantes)
+AnonymatSvc --> Controller : 22. DonneesAnonymisees
+deactivate AnonymatSvc
+
+' Sauvegarde des données
+Controller -> ReponsesModel : 23. enregistrerEvaluation(donneesAnonymisees)
+activate ReponsesModel
+
+ReponsesModel -> BDD : 24. BEGIN TRANSACTION
+activate BDD
+
+ReponsesModel -> BDD : 25. INSERT INTO evaluations(...)\nVALUES(...)
+BDD --> ReponsesModel : 26. evaluation_id
+
+ReponsesModel -> BDD : 27. INSERT INTO reponses(...)\nVALUES(...) [pour chaque question]
+
+ReponsesModel -> BDD : 28. COMMIT TRANSACTION
+BDD --> ReponsesModel : 29. Confirmation
+deactivate BDD
+
+ReponsesModel --> Controller : 30. SuccessEvaluation
+deactivate ReponsesModel
+
+' Notification
+Controller -> NotifSvc : 31. envoyerNotification(typeEvent="evaluation_soumise")
+activate NotifSvc
+
+NotifSvc -> BDD : 32. Enregistre événement
+activate BDD
+BDD --> NotifSvc : 33. OK
+deactivate BDD
+
+NotifSvc --> Controller : 34. Notification envoyée
+deactivate NotifSvc
+
+Controller --> Vue : 35. ConfirmationSucces
+deactivate Controller
+
+Vue --> Etudiant : 36. "Évaluation soumise avec succès ✓"
+deactivate Vue
+
+'═══════════════════════════════════════════════════════════════
+' ALTERNATIVE 1 - Évaluation incomplète
+'═══════════════════════════════════════════════════════════════
+
+== Alternative 1 : Évaluation incomplète ==
+
+Etudiant -> Vue : 1a. Remplit partiellement le formulaire
+activate Vue
+
+Etudiant -> Vue : 2a. Clique sur "Soumettre"
+
+Vue -> Controller : 3a. soumettreEvaluation(donneesPartielles)
+activate Controller
+
+Controller -> Controller : 4a. validerCompletude(donneesPartielles)
+note right : Détecte des questions\nobligatoires manquantes
+
+Controller --> Vue : 5a. ErreurValidation(questionsManquantes[])
+deactivate Controller
+
+Vue --> Etudiant : 6a. Affiche erreurs et surligne\nles champs manquants
+deactivate Vue
+
+Etudiant -> Vue : 7a. Complète les champs manquants
+activate Vue
+note right : Retour au scénario idéal
+
+'═══════════════════════════════════════════════════════════════
+' ALTERNATIVE 2 - Sauvegarde brouillon (compatibilité mobile)
+'═══════════════════════════════════════════════════════════════
+
+== Alternative 2 : Sauvegarde en brouillon ==
+
+Etudiant -> VueMobile : 1b. Utilise l'application mobile
+activate VueMobile
+
+Etudiant -> VueMobile : 2b. Remplit quelques questions
+
+Etudiant -> VueMobile : 3b. Clique sur "Sauvegarder brouillon"
+
+VueMobile -> Controller : 4b. sauvegarderBrouillon(donneesPartielles)
+activate Controller
+
+Controller -> ReponsesModel : 5b. enregistrerBrouillon(idEtudiant, donnees)
+activate ReponsesModel
+
+ReponsesModel -> BDD : 6b. INSERT/UPDATE brouillons_evaluations\nSET donnees_json = ?...
+activate BDD
+BDD --> ReponsesModel : 7b. Confirmation
+deactivate BDD
+
+ReponsesModel --> Controller : 8b. BrouillonSauvegarde
+deactivate ReponsesModel
+
+Controller --> VueMobile : 9b. ConfirmationBrouillon
+deactivate Controller
+
+VueMobile --> Etudiant : 10b. "Brouillon sauvegardé ✓\nVous pouvez reprendre plus tard"
+deactivate VueMobile
+
+...L'étudiant reprend plus tard...
+
+Etudiant -> Vue : 11b. Retourne sur la page d'évaluation
+activate Vue
+
+Vue -> Controller : 12b. recupererBrouillon(idEtudiant, idEvaluation)
+activate Controller
+
+Controller -> ReponsesModel : 13b. chargerBrouillon()
+activate ReponsesModel
+
+ReponsesModel -> BDD : 14b. SELECT * FROM brouillons_evaluations\nWHERE etudiant_id = ?...
+activate BDD
+BDD --> ReponsesModel : 15b. Données brouillon
+deactivate BDD
+
+ReponsesModel --> Controller : 16b. DonneesBrouillon
+deactivate ReponsesModel
+
+Controller --> Vue : 17b. FormulairePrerempli
+deactivate Controller
+
+Vue --> Etudiant : 18b. Affiche formulaire\navec données restaurées
+deactivate Vue
+
+note right : L'étudiant peut continuer\net soumettre normalement
+
+'═══════════════════════════════════════════════════════════════
+' ALTERNATIVE 3 - Erreur système lors de la soumission
+'═══════════════════════════════════════════════════════════════
+
+== Alternative 3 : Erreur système ==
+
+Etudiant -> Vue : 1c. Soumet une évaluation complète
+activate Vue
+
+Vue -> Controller : 2c. soumettreEvaluation(donnees)
+activate Controller
+
+Controller -> ReponsesModel : 3c. enregistrerEvaluation(donnees)
+activate ReponsesModel
+
+ReponsesModel -> BDD : 4c. BEGIN TRANSACTION
+activate BDD
+
+ReponsesModel -> BDD : 5c. INSERT INTO evaluations(...)
+
+BDD --> ReponsesModel : 6c. ❌ ERREUR (timeout/connexion)
+deactivate BDD
+
+ReponsesModel -> BDD : 7c. ROLLBACK TRANSACTION
+activate BDD
+deactivate BDD
+
+ReponsesModel --> Controller : 8c. ErreurBDD(messageErreur)
+deactivate ReponsesModel
+
+Controller --> Vue : 9c. ErreurSauvegarde(message)
+deactivate Controller
+
+Vue --> Etudiant : 10c. "❌ Erreur lors de la sauvegarde.\nVos réponses ont été conservées."
+deactivate Vue
+
+Etudiant -> Vue : 11c. Clique sur "Réessayer"
+activate Vue
+
+note right : Retente automatique\navec les mêmes données
+
+Vue -> Controller : 12c. soumettreEvaluation(donnees)
+activate Controller
+note right : Reprend à l'étape 23\ndu scénario idéal
+
+@enduml

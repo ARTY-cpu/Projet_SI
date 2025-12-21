@@ -1,0 +1,348 @@
+@startuml "UC6 - Visualiser le tableau de bord interactif (MVC)"
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam BoxPadding 10
+
+title Diagramme de séquence - UC6 : Visualiser le tableau de bord interactif\n(Architecture MVC avec scénario idéal et alternatives)
+
+'═══════════════════════════════════════════════════════════════
+' ACTEURS ET COMPOSANTS MVC
+'═══════════════════════════════════════════════════════════════
+
+actor "Enseignant/\nAdministrateur" as Utilisateur
+box "Couche Présentation (Vue)" #E3F2FD
+  participant "TableauBord\n(Vue)" as Vue
+  participant "GraphiquesInteractifs\n(Composants Vue)" as Graphiques
+  participant "VueMobile\n(Responsive)" as VueMobile
+end box
+
+box "Couche Métier (Contrôleur)" #FFF9C4
+  participant "TableauBordController" as Controller
+  participant "StatistiquesService" as StatsSvc
+  participant "EvolutionService" as EvolutionSvc
+  participant "FiltreService" as FiltreSvc
+end box
+
+box "Couche Données (Modèle)" #E8F5E9
+  participant "EvaluationModel" as EvalModel
+  participant "StatistiquesModel" as StatsModel
+  participant "CommentairesModel" as CommentModel
+end box
+
+database "Base de données" as BDD
+
+'═══════════════════════════════════════════════════════════════
+' SCÉNARIO IDÉAL - Chargement complet du tableau de bord
+'═══════════════════════════════════════════════════════════════
+
+== Scénario Idéal : Chargement et visualisation du tableau de bord ==
+
+Utilisateur -> Vue : 1. Accède au tableau de bord
+activate Vue
+
+Vue -> Controller : 2. chargerTableauBord(idUtilisateur, role)
+activate Controller
+
+' Vérification des permissions
+Controller -> Controller : 3. verifierPermissions(idUtilisateur, role)
+note right : Vérifie si l'utilisateur peut\naccéder à ses propres stats\n(enseignant) ou à toutes (admin)
+
+' Récupération des données d'évaluation
+Controller -> EvalModel : 4. recupererEvaluations(idUtilisateur, periode)
+activate EvalModel
+
+EvalModel -> BDD : 5. SELECT e.*, COUNT(*) as nb_evaluations\nFROM evaluations e\nWHERE enseignant_id = ? AND date >= ?
+activate BDD
+BDD --> EvalModel : 6. Liste des évaluations
+deactivate BDD
+
+EvalModel --> Controller : 7. Evaluations[]
+deactivate EvalModel
+
+' Calcul des statistiques globales
+Controller -> StatsSvc : 8. calculerStatistiquesGlobales(evaluations)
+activate StatsSvc
+
+StatsSvc -> StatsModel : 9. calculerMoyennes(evaluations)
+activate StatsModel
+
+StatsModel -> BDD : 10. SELECT AVG(note), COUNT(*),\ncategorie FROM reponses\nGROUP BY categorie
+activate BDD
+BDD --> StatsModel : 11. Statistiques agrégées
+deactivate BDD
+
+StatsModel --> StatsSvc : 12. Moyennes par catégorie
+deactivate StatsModel
+
+StatsSvc -> StatsSvc : 13. calculerIndicateurs()\n(satisfaction, participation, etc.)
+
+StatsSvc --> Controller : 14. StatistiquesGlobales
+deactivate StatsSvc
+
+' Récupération de l'évolution temporelle
+Controller -> EvolutionSvc : 15. recupererEvolution(idUtilisateur, periode)
+activate EvolutionSvc
+
+EvolutionSvc -> StatsModel : 16. recupererDonneesTemporelles()
+activate StatsModel
+
+StatsModel -> BDD : 17. SELECT DATE_FORMAT(date, '%Y-%m') as mois,\nAVG(note) FROM evaluations\nGROUP BY mois ORDER BY mois
+activate BDD
+BDD --> StatsModel : 18. Données chronologiques
+deactivate BDD
+
+StatsModel --> EvolutionSvc : 19. DonneesEvolution
+deactivate StatsModel
+
+EvolutionSvc -> EvolutionSvc : 20. calculerTendances()\n(progression, régression)
+
+EvolutionSvc --> Controller : 21. Evolution + Tendances
+deactivate EvolutionSvc
+
+' Récupération des commentaires (aperçu)
+Controller -> CommentModel : 22. recupererCommentairesRecents(idUtilisateur, limite=5)
+activate CommentModel
+
+CommentModel -> BDD : 23. SELECT commentaire, date\nFROM commentaires_anonymes\nWHERE enseignant_id = ?\nORDER BY date DESC LIMIT 5
+activate BDD
+BDD --> CommentModel : 24. Commentaires récents
+deactivate BDD
+
+CommentModel --> Controller : 25. Commentaires[]
+deactivate CommentModel
+
+' Assemblage des données du tableau de bord
+Controller -> Controller : 26. assemblerTableauBord()\n(stats, évolution, commentaires)
+
+Controller --> Vue : 27. DonneesTableauBord
+deactivate Controller
+
+' Affichage progressif
+Vue -> Graphiques : 28. afficherStatistiquesGlobales(stats)
+activate Graphiques
+
+Graphiques --> Vue : 29. Cartes KPI affichées
+deactivate Graphiques
+
+Vue -> Graphiques : 30. afficherGraphiqueEvolution(evolution)
+activate Graphiques
+
+Graphiques -> Graphiques : 31. Génère graphique linéaire\navec tendances
+
+Graphiques --> Vue : 32. Graphique d'évolution affiché
+deactivate Graphiques
+
+Vue -> Graphiques : 33. afficherGraphiqueCategoriesPie(stats)
+activate Graphiques
+
+Graphiques --> Vue : 34. Graphique circulaire affiché
+deactivate Graphiques
+
+Vue --> Utilisateur : 35. Affiche tableau de bord complet
+deactivate Vue
+
+'═══════════════════════════════════════════════════════════════
+' INTERACTION - Filtrage interactif
+'═══════════════════════════════════════════════════════════════
+
+== Interaction Utilisateur : Filtrage des données ==
+
+Utilisateur -> Vue : 36. Sélectionne un filtre\n(période: semestre actuel)
+activate Vue
+
+Vue -> Controller : 37. appliquerFiltre(typeFiltrage, valeurs)
+activate Controller
+
+Controller -> FiltreSvc : 38. filtrerDonnees(criteres)
+activate FiltreSvc
+
+FiltreSvc -> EvalModel : 39. recupererEvaluations(criteresFiltres)
+activate EvalModel
+
+EvalModel -> BDD : 40. SELECT ... WHERE date BETWEEN ? AND ?
+activate BDD
+BDD --> EvalModel : 41. Données filtrées
+deactivate BDD
+
+EvalModel --> FiltreSvc : 42. EvaluationsFiltrees[]
+deactivate EvalModel
+
+FiltreSvc --> Controller : 43. DonneesFiltrees
+deactivate FiltreSvc
+
+Controller -> StatsSvc : 44. recalculerStatistiques(donneesFiltrees)
+activate StatsSvc
+
+StatsSvc --> Controller : 45. NouvellesStatistiques
+deactivate StatsSvc
+
+Controller --> Vue : 46. DonneesActualisees
+deactivate Controller
+
+Vue -> Graphiques : 47. actualiserGraphiques(nouvellesDonnees)
+activate Graphiques
+
+Graphiques --> Vue : 48. Graphiques mis à jour
+deactivate Graphiques
+
+Vue --> Utilisateur : 49. Affiche tableau de bord actualisé
+deactivate Vue
+
+'═══════════════════════════════════════════════════════════════
+' ALTERNATIVE 1 - Aucune donnée disponible
+'═══════════════════════════════════════════════════════════════
+
+== Alternative 1 : Aucune évaluation disponible ==
+
+Utilisateur -> Vue : 1a. Accède au tableau de bord\n(nouveau enseignant)
+activate Vue
+
+Vue -> Controller : 2a. chargerTableauBord(idUtilisateur, role)
+activate Controller
+
+Controller -> EvalModel : 3a. recupererEvaluations(idUtilisateur)
+activate EvalModel
+
+EvalModel -> BDD : 4a. SELECT * FROM evaluations\nWHERE enseignant_id = ?
+activate BDD
+BDD --> EvalModel : 5a. ❌ Aucun résultat
+deactivate BDD
+
+EvalModel --> Controller : 6a. ListeVide[]
+deactivate EvalModel
+
+Controller -> Controller : 7a. detecterAbsenceDonnees()
+
+Controller --> Vue : 8a. AucuneDonnee(message)
+deactivate Controller
+
+Vue --> Utilisateur : 9a. Affiche message d'accueil:\n"Aucune évaluation pour le moment.\nLes résultats apparaîtront ici\nune fois les évaluations reçues."
+deactivate Vue
+
+'═══════════════════════════════════════════════════════════════
+' ALTERNATIVE 2 - Accès depuis mobile avec chargement partiel
+'═══════════════════════════════════════════════════════════════
+
+== Alternative 2 : Accès mobile avec chargement progressif ==
+
+Utilisateur -> VueMobile : 1b. Accède depuis mobile
+activate VueMobile
+
+VueMobile -> Controller : 2b. chargerTableauBordMobile(idUtilisateur, mode=leger)
+activate Controller
+note right : Mode léger pour optimiser\nla bande passante mobile
+
+Controller -> EvalModel : 3b. recupererStatistiquesResumees(idUtilisateur)
+activate EvalModel
+
+EvalModel -> BDD : 4b. SELECT AVG(note) as moyenne,\nCOUNT(*) as total\nFROM evaluations\nWHERE enseignant_id = ?
+activate BDD
+BDD --> EvalModel : 5b. Statistiques résumées uniquement
+deactivate BDD
+
+EvalModel --> Controller : 6b. StatsResumees (données allégées)
+deactivate EvalModel
+
+Controller --> VueMobile : 7b. DonneesMobile (version simplifiée)
+deactivate Controller
+
+VueMobile --> Utilisateur : 8b. Affiche vue mobile optimisée\navec indicateurs clés
+deactivate VueMobile
+
+...L'utilisateur veut plus de détails...
+
+Utilisateur -> VueMobile : 9b. Clique sur "Voir détails"
+activate VueMobile
+
+VueMobile -> Controller : 10b. chargerDetailsComplets(idUtilisateur)
+activate Controller
+note right : Chargement progressif\ndes données complètes
+
+Controller -> EvalModel : 11b. recupererEvaluations(idUtilisateur)
+activate EvalModel
+note right : Reprend le scénario idéal\nà partir de l'étape 5
+
+'═══════════════════════════════════════════════════════════════
+' ALTERNATIVE 3 - Comparaison avec la moyenne départementale
+'═══════════════════════════════════════════════════════════════
+
+== Alternative 3 : Comparaison avec moyennes (Administrateur) ==
+
+Utilisateur -> Vue : 1c. Enseignant clique sur\n"Comparer avec la moyenne"
+activate Vue
+note right : Fonctionnalité disponible\nselon configuration
+
+Vue -> Controller : 2c. demanderComparaison(idEnseignant)
+activate Controller
+
+Controller -> StatsSvc : 3c. calculerMoyenneDepartement(departement)
+activate StatsSvc
+
+StatsSvc -> StatsModel : 4c. recupererMoyenneGlobale()
+activate StatsModel
+
+StatsModel -> BDD : 5c. SELECT AVG(note) FROM evaluations\nWHERE departement_id = ?\nAND date >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
+activate BDD
+BDD --> StatsModel : 6c. Moyenne départementale
+deactivate BDD
+
+StatsModel --> StatsSvc : 7c. MoyenneDepartement
+deactivate StatsModel
+
+StatsSvc -> StatsSvc : 8c. calculerPositionnement()\n(quartile, percentile)
+
+StatsSvc --> Controller : 9c. DonneesComparaison
+deactivate StatsSvc
+
+Controller --> Vue : 10c. StatistiquesComparatives
+deactivate Controller
+
+Vue -> Graphiques : 11c. afficherGraphiqueComparaison()
+activate Graphiques
+
+Graphiques --> Vue : 12c. Graphique de comparaison\n(barres comparatives)
+deactivate Graphiques
+
+Vue --> Utilisateur : 13c. Affiche positionnement\npar rapport à la moyenne
+deactivate Vue
+
+'═══════════════════════════════════════════════════════════════
+' ALTERNATIVE 4 - Erreur de chargement
+'═══════════════════════════════════════════════════════════════
+
+== Alternative 4 : Erreur de chargement ==
+
+Utilisateur -> Vue : 1d. Accède au tableau de bord
+activate Vue
+
+Vue -> Controller : 2d. chargerTableauBord(idUtilisateur)
+activate Controller
+
+Controller -> EvalModel : 3d. recupererEvaluations()
+activate EvalModel
+
+EvalModel -> BDD : 4d. SELECT * FROM evaluations...
+activate BDD
+BDD --> EvalModel : 5d. ❌ ERREUR (timeout/surcharge)
+deactivate BDD
+
+EvalModel --> Controller : 6d. ErreurBDD(message)
+deactivate EvalModel
+
+Controller --> Vue : 7d. ErreurChargement(message)
+deactivate Controller
+
+Vue --> Utilisateur : 8d. Affiche message d'erreur:\n"❌ Erreur de chargement.\nVeuillez réessayer."
+deactivate Vue
+
+Utilisateur -> Vue : 9d. Clique sur "Réessayer"
+activate Vue
+
+Vue -> Controller : 10d. chargerTableauBord(idUtilisateur)
+activate Controller
+note right : Retente automatique
+
+@enduml
