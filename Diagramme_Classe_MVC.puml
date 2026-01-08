@@ -1,0 +1,97 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+title Diagramme de classes MVC - UC1 Remplir une evaluation
+
+package "Vue" {
+  class PageEvaluation {
+    +afficherFormulaire()
+    +afficherConfirmation()
+    +afficherErreurs()
+  }
+
+  class FormulaireMobile {
+    +saisirReponses()
+    +sauvegarderBrouillon()
+  }
+}
+
+package "Controleur" {
+  class EvaluationController {
+    +demanderFormulaireEvaluation(idCours)
+    +soumettreEvaluation(donnees)
+    +validerCompletude(donnees)
+    +sauvegarderBrouillon(donnees)
+    +recupererBrouillon(idEtudiant)
+  }
+}
+
+package "Modele" {
+
+  class EvaluationModel {
+    +recupererFormulaireActif(idCours)
+  }
+
+  class QuestionModel {
+    +recupererQuestions(idFormulaire)
+  }
+
+  class ReponsesModel {
+    +enregistrerEvaluation(donnees)
+    +enregistrerBrouillon(donnees)
+    +chargerBrouillon(idEtudiant)
+  }
+
+  class Evaluation {
+    idEvaluation
+    date
+    statut
+  }
+
+  class Question {
+    idQuestion
+    libelle
+    obligatoire
+  }
+
+  class Reponse {
+    idReponse
+    valeur
+  }
+
+  class Brouillon {
+    idBrouillon
+    donneesJSON
+    dateSauvegarde
+  }
+}
+
+package "Services" {
+  class AnonymatService {
+    +garantirAnonymat(donnees)
+  }
+
+  class NotificationService {
+    +envoyerNotification(typeEvent)
+  }
+}
+
+PageEvaluation --> EvaluationController
+FormulaireMobile --> EvaluationController
+
+EvaluationController --> EvaluationModel
+EvaluationController --> QuestionModel
+EvaluationController --> ReponsesModel
+EvaluationController --> AnonymatService
+EvaluationController --> NotificationService
+
+EvaluationModel --> Evaluation
+QuestionModel --> Question
+ReponsesModel --> Reponse
+ReponsesModel --> Brouillon
+
+Evaluation "1" o-- "*" Question
+Question "1" o-- "*" Reponse
+
+@enduml
