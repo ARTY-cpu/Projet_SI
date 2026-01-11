@@ -1,0 +1,358 @@
+@startuml "Écran 1 - Tableau de bord principal"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | Prof. Martin (Enseignant) | {SI Déconnexion }
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Statistiques | Commentaires | Paramètres
+    }
+  }
+  ==
+  {+
+    {
+      <b><size:14>Tableau de bord - Vue d'ensemble</b>
+      Période : Année académique 2025-2026 | {SI Actualiser } | {SI Exporter PDF }
+    }
+    ==
+    {/ <b>Indicateurs clés de performance</b> | }
+    --
+    {
+      <b>Note globale</b> | <b>Participation</b> | <b>Satisfaction</b>
+      <size:18><color:green><b>4.2</b>/5.0 | <size:18><b>87%</b> | <size:18><color:green><b>85%</b>
+      +0.3 vs semestre | 142/163 étudiants | +5% vs semestre
+    }
+    ==
+    {
+      <b>Évolution des performances</b> | <b>Répartition par catégorie</b>
+      --
+      5.0 |            ● | Clarté : 4.5/5
+      4.5 |      ●---● | Disponibilité : 4.3/5
+      4.0 |  ●-● | Organisation : 4.4/5
+      3.5 | ● | Matériel : 4.0/5
+        |________ | Évaluation : 4.2/5
+         O N J | Relation : 4.7/5
+    }
+    ==
+    {/ <b>Commentaires récents</b> | {SI Voir tous } }
+    --
+    {#
+      <b>Date</b> | <b>Cours</b> | <b>Commentaire</b> | <b>Sentiment</b>
+      10/01 | Math Avancées | Très bon enseignant | <color:green>Positif
+      09/01 | Algèbre | Le rythme est rapide | <color:orange>Neutre
+      08/01 | Math Avancées | J'apprécie ce cours | <color:green>Positif
+      07/01 | Statistiques | Plus d'exercices | <color:orange>Neutre
+    }
+  }
+}
+@enduml
+
+@startuml "Écran 2 - Filtres actifs"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | Prof. Martin | {SI Déconnexion }
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Statistiques | Commentaires | Paramètres
+    }
+  }
+  ==
+  {+
+    {
+      <b><size:14>Tableau de bord - Vue filtrée</b>
+    }
+    ==
+    {/ <b>Filtres</b> | }
+    {
+      Période : Semestre actuel | Cours : Mathématiques Avancées | Note min : 3.0
+      {SI Appliquer } | {SI Réinitialiser }
+    }
+    ==
+    {/ <b>Résultats filtrés</b> | }
+    --
+    {
+      <b>Note moyenne</b> | <b>Satisfaction</b> | <b>Commentaires</b>
+      <size:18><color:green><b>4.3</b>/5.0 | <size:18><b>88%</b> | <size:18><b>38</b>
+      Sur 45 évaluations | Pour ce cours | 32 positifs
+    }
+    --
+    {/ <b>Distribution des notes</b> | }
+    --
+    {
+      5 étoiles : 23 évaluations (51%)
+      4 étoiles : 15 évaluations (33%)
+      3 étoiles : 7 évaluations (16%)
+      2 étoiles : 0 évaluations (0%)
+      1 étoile : 0 évaluations (0%)
+    }
+  }
+}
+@enduml
+
+@startuml "Écran 3 - Commentaires détaillés"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | Prof. Martin | {SI Déconnexion }
+  {+
+    {T
+      + Tableau de bord | Mes évaluations | Statistiques | <b>Commentaires</b> | Paramètres
+    }
+  }
+  ==
+  {+
+    {
+      <b><size:14>Tous les commentaires anonymes</b> (124 total)
+      Rechercher | {SI Filtrer } | Trier : Plus récent | Afficher : Tous
+    }
+    ==
+    {
+      <color:green><b>Commentaire positif</b> - 10/01/2026
+      Cours : Mathématiques Avancées
+      --
+      Très bon enseignant, explications claires et précises. 
+      Les exemples utilisés facilitent la compréhension.
+      --
+      {SI Utile (2) } | {SI Marquer }
+    }
+    --
+    {
+      <color:orange><b>Commentaire neutre</b> - 09/01/2026
+      Cours : Algèbre
+      --
+      Le rythme est parfois un peu rapide pour assimiler 
+      tous les concepts. Sinon le cours est intéressant.
+      --
+      {SI Utile (1) } | {SI Marquer }
+    }
+    --
+    {
+      <color:green><b>Commentaire positif</b> - 08/01/2026
+      Cours : Mathématiques Avancées
+      --
+      J'apprécie beaucoup ce cours et la pédagogie du professeur.
+      --
+      {SI Utile (3) } | {SI Marquer }
+    }
+    ==
+    <i>Affichage 1-3 sur 124 commentaires
+    ==
+    {SI Précédent } | Page 1/42 | {SI Suivant }
+  }
+}
+@enduml
+
+@startuml "Écran 4 - Statistiques détaillées"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | Prof. Martin | {SI Déconnexion }
+  {+
+    {T
+      + Tableau de bord | Mes évaluations | <b>Statistiques détaillées</b> | Commentaires | Paramètres
+    }
+  }
+  ==
+  {+
+    {
+      <b><size:14>Analyse détaillée par cours</b>
+      Cours : Mathématiques Avancées | {SI Exporter }
+    }
+    ==
+    {/ <b>Vue d'ensemble - Mathématiques Avancées</b> | }
+    --
+    {
+      Période : Semestre 1 (Sep 2025 - Jan 2026)
+      Nombre d'étudiants : 45
+      Taux de participation : 91% (41 évaluations)
+      Note moyenne : 4.3/5.0
+    }
+    ==
+    {/ <b>Analyse détaillée par question</b> | }
+    --
+    {#
+      <b>Question</b> | <b>Moyenne</b> | <b>Évolution</b>
+      Clarté des explications | 4.5/5 | <color:green>+0.2
+      Disponibilité | 4.3/5 | <color:green>+0.1
+      Organisation du cours | 4.4/5 | 0.0
+      Rythme du cours | 4.0/5 | <color:red>-0.2
+      Matériel pédagogique | 4.2/5 | <color:green>+0.3
+      Exercices proposés | 4.1/5 | 0.0
+    }
+    ==
+    {
+      <b>Points forts identifiés</b> | <b>Axes d'amélioration</b>
+      --
+      Clarté de l'enseignement (4.5/5) | Rythme du cours (4.0/5)
+      Organisation du cours (4.4/5) | Quantité d'exercices
+      Relation avec étudiants (4.7/5) | Temps alloué aux questions
+    }
+  }
+}
+@enduml
+
+@startuml "Écran 5 - Comparaison avec moyennes"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | Dr. Lefebvre (Admin) | {SI Déconnexion }
+  {+
+    {T
+      + Vue d'ensemble | <b>Comparaisons</b> | Rapports | Gestion | Paramètres
+    }
+  }
+  ==
+  {+
+    {
+      <b><size:14>Comparaison des performances</b>
+      Enseignant : Prof. Martin | Département : Mathématiques | Période : 2025-2026
+    }
+    ==
+    {/ <b>Positionnement</b> | }
+    --
+    {
+      <b>Note enseignant</b> | <b>Moyenne département</b> | <b>Classement</b>
+      <size:18><color:green><b>4.2</b>/5.0 | <size:18><b>3.9</b>/5.0 | <size:18><b>3e/15</b>
+      . | . | Quartile supérieur
+    }
+    ==
+    {/ <b>Comparaison graphique</b> | }
+    --
+    {
+      Clarté enseignement : Moyenne 3.9 / Enseignant 4.5
+      Disponibilité : Moyenne 3.7 / Enseignant 4.3
+      Organisation : Moyenne 3.8 / Enseignant 4.4
+      Matériel : Moyenne 3.6 / Enseignant 4.0
+      Évaluation : Moyenne 3.8 / Enseignant 4.2
+      Relation étudiants : Moyenne 3.9 / Enseignant 4.7
+    }
+    ==
+    {/ <b>Analyse comparative</b> | }
+    --
+    {
+      <b>Points supérieurs à la moyenne :</b>
+      Toutes les catégories au-dessus de la moyenne départementale
+      Particulièrement fort en Relation avec étudiants (+0.8)
+      .
+      <b>Tendance :</b>
+      Progression constante depuis 2 ans
+      Parmi les 20% meilleurs enseignants du département
+    }
+  }
+}
+@enduml
+
+@startuml "Écran 6 - Version Mobile"
+salt
+{
+  {+
+    {T
+      + <b>Tableau de bord</b> | Prof. M | Menu
+    }
+  }
+  ==
+  {
+    <b>Prof. Martin</b>
+    Vue d'ensemble
+  }
+  ==
+  {
+    <b>Note globale</b> | <b>Participation</b> | <b>Satisfaction</b>
+    <size:16><color:green><b>4.2</b>/5.0 | <size:16><b>87%</b> | <size:16><color:green><b>85%</b>
+    +0.3 | 142/163 | +5%
+  }
+  ==
+  {/ <b>Évolution</b> | }
+  {
+    5.0 |   ●
+    4.0 | ●
+    3.0 | ●
+      |____
+       O J
+  }
+  ==
+  {/ <b>Commentaires récents</b> (5) | }
+  {
+    <color:green>Positif - 10/01
+    Très bon enseignant...
+    {SI Voir plus }
+    --
+    <color:orange>Neutre - 09/01
+    Le rythme est parfois...
+    {SI Voir plus }
+  }
+  {SI Voir tous }
+  ==
+  {
+    {T
+      + Accueil | Stats | Commentaires | Profil
+    }
+  }
+}
+@enduml
+
+@startuml "Écran 7 - Aucune donnée"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | Prof. Nouveau | {SI Déconnexion }
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Statistiques | Commentaires | Paramètres
+    }
+  }
+  ==
+  {+
+    .
+    .
+    {
+      <size:16><b>Bienvenue sur votre tableau de bord !</b>
+      .
+      <i>Aucune évaluation disponible pour le moment.
+      .
+      Les résultats de vos évaluations apparaîtront ici 
+      une fois que vos étudiants auront complété leurs évaluations.
+      .
+      <b>Prochaines étapes :</b>
+      - Les évaluations sont envoyées automatiquement aux étudiants
+      - Vous recevrez une notification dès les premiers résultats
+      - Vous pourrez consulter vos statistiques en temps réel
+      .
+      {SI Consulter le guide } | {SI Contacter support }
+    }
+    .
+    .
+  }
+}
+@enduml
+
+@startuml "Écran 8 - Erreur de chargement"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | Prof. Martin | {SI Déconnexion }
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Statistiques | Commentaires | Paramètres
+    }
+  }
+  ==
+  {+
+    .
+    .
+    {
+      <size:16><color:red><b>Erreur de chargement</b>
+      .
+      <i>Impossible de charger les données du tableau de bord.
+      .
+      <b>Causes possibles :</b>
+      - Problème de connexion au serveur
+      - Maintenance en cours
+      - Délai d'attente dépassé
+      .
+      <b>Solutions :</b>
+      - Vérifiez votre connexion internet
+      - Réessayez dans quelques instants
+      - Contactez le support si le problème persiste
+      .
+      {SI Réessayer } | {SI Support }
+    }
+    .
+    .
+  }
+}
+@enduml

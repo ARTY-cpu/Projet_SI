@@ -1,0 +1,101 @@
+@startuml "BPMN - Processus d'évaluation des enseignants"
+
+title Modèle BPMN - Processus d'évaluation des enseignants
+
+|#E3F2FD|Étudiants|
+
+start
+
+:Recevoir notification\nd'évaluation par email;
+
+:Se connecter au système;
+
+:Consulter liste\ndes évaluations;
+
+if (Brouillon existe ?) then (oui)
+  :Reprendre brouillon;
+else (non)
+  :Commencer nouvelle\névaluation;
+endif
+
+while (Formulaire valide ?) is (non)
+  :Remplir formulaire\n• Questions obligatoires\n• Notes 1-5\n• Commentaires;
+  
+  :Sauvegarde automatique;
+  
+  :Valider formulaire;
+  
+  if (Erreurs détectées ?) then (oui)
+    :Afficher erreurs;
+  endif
+endwhile (oui)
+
+:Afficher récapitulatif\ncomplet;
+
+if (Confirmer soumission ?) then (oui)
+  :Soumettre évaluation\ndéfinitive;
+  
+  :Recevoir confirmation\npar email;
+  
+  stop
+else (non)
+  end
+endif
+
+|#E8F5E9|Université|
+
+start
+
+-[hidden]->
+-[hidden]->
+-[hidden]->
+-[hidden]->
+-[hidden]->
+-[hidden]->
+-[hidden]->
+-[hidden]->
+
+:Configurer période\nd'évaluation;
+
+:Générer formulaires\npar cours;
+
+:Envoyer notifications\naux étudiants;
+
+partition "Réception des évaluations" {
+  :Recevoir évaluation\nsoumise;
+  
+  :Contrôler intégrité\ndes données;
+  
+  :Anonymiser évaluation\n• Supprimer ID étudiant\n• Hash temporel\n• Chiffrement;
+  
+  :Stocker dans base\nanonymisée;
+}
+
+if (Période terminée ?) then (oui)
+  
+  partition "Traitement final" {
+    :Agréger toutes\nles évaluations;
+    
+    :Calculer statistiques\n• Moyennes\n• Écarts-types\n• Distributions;
+    
+    :Analyser sentiments\ndes commentaires (NLP);
+    
+    fork
+      :Générer rapport\npar enseignant;
+    fork again
+      :Publier résultats\nsur tableau de bord;
+    end fork
+    
+    :Notifier enseignants\npar email;
+    
+    :Archiver données\npour audit;
+  }
+  
+  stop
+  
+else (non)
+  :Continuer réception;
+  detach
+endif
+
+@enduml

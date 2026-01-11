@@ -1,0 +1,53 @@
+@startuml "Navigation - Système d'évaluation"
+
+title Diagramme de navigation - UC1 et UC6
+
+skinparam state {
+  BackgroundColor<<Evaluation>> #E3F2FD
+  BorderColor<<Evaluation>> #1976D2
+  BackgroundColor<<Dashboard>> #E8F5E9
+  BorderColor<<Dashboard>> #388E3C
+}
+
+[*] --> Authentification
+
+state Authentification {
+  PageConnexion --> EspaceEtudiant : Connexion Étudiant
+  PageConnexion --> EspaceEnseignant : Connexion Enseignant
+}
+
+state "UC1 : Remplir une évaluation" as EspaceEtudiant <<Evaluation>> {
+  [*] --> ListeEvaluations
+  
+  ListeEvaluations --> FormulaireEvaluation : Commencer évaluation
+  ListeEvaluations --> FormulaireEvaluation : Reprendre brouillon
+  
+  FormulaireEvaluation --> ConfirmationSoumission : Soumettre
+  FormulaireEvaluation --> ListeEvaluations : Sauvegarder brouillon
+  FormulaireEvaluation --> ErreurValidation : Validation échouée
+  
+  ErreurValidation --> FormulaireEvaluation : Corriger
+  
+  ConfirmationSoumission --> FormulaireEvaluation : Modifier
+  ConfirmationSoumission --> SoumissionReussie : Confirmer
+  
+  SoumissionReussie --> ListeEvaluations : Retour
+}
+
+state "UC6 : Tableau de bord enseignant" as EspaceEnseignant <<Dashboard>> {
+  [*] --> TableauBordPrincipal
+  
+  TableauBordPrincipal --> TableauBordFiltre : Appliquer filtres
+  TableauBordFiltre --> TableauBordPrincipal : Réinitialiser
+  
+  TableauBordPrincipal --> PageCommentaires : Voir commentaires
+  PageCommentaires --> TableauBordPrincipal : Retour
+  
+  TableauBordPrincipal --> StatistiquesDetaillees : Voir statistiques
+  StatistiquesDetaillees --> TableauBordPrincipal : Retour
+}
+
+EspaceEtudiant --> [*] : Déconnexion
+EspaceEnseignant --> [*] : Déconnexion
+
+@enduml

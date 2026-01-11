@@ -1,0 +1,568 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tocloft}
+\usepackage{titlesec}
+
+\geometry{margin=2.5cm}
+
+% Configuration des couleurs
+\definecolor{titlecolor}{RGB}{25,118,210}
+\definecolor{sectioncolor}{RGB}{56,142,60}
+
+% Configuration des en-têtes
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Projet Système d'Information}
+\fancyhead[R]{Évaluation des Enseignants}
+\fancyfoot[C]{\thepage}
+
+% Configuration des titres de sections
+\titleformat{\section}
+  {\color{titlecolor}\normalfont\Large\bfseries}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\color{sectioncolor}\normalfont\large\bfseries}
+  {\thesubsection}{1em}{}
+
+% Configuration des liens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Rapport Projet SI},
+}
+
+\begin{document}
+
+% Page de garde
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries Projet Système d'Information\par}
+    \vspace{1.5cm}
+    
+    {\LARGE Système d'évaluation des enseignants\par}
+    \vspace{0.5cm}
+    {\large Analyse et Conception avec Architecture MVC\par}
+    
+    \vspace{3cm}
+    
+    {\Large\textbf{Étudiants :}\par}
+    \vspace{0.5cm}
+    {\large 
+    \textbf{Alexis CHARPENTREAU}\par
+    \textbf{Arthur MAGNETTE}\par
+    }
+    
+    \vfill
+    
+    {\large Année académique 2025-2026\par}
+    {\large \today\par}
+    
+\end{titlepage}
+
+% Table des matières
+\tableofcontents
+\newpage
+
+% Introduction
+\section{Introduction}
+
+\subsection{Contexte du projet}
+
+Ce rapport présente l'analyse et la conception d'un système d'information dédié à l'évaluation des enseignants par les étudiants. Le système vise à garantir l'anonymat des évaluations tout en fournissant des données statistiques pertinentes aux enseignants et aux administrateurs.
+
+\subsection{Objectifs}
+
+Les principaux objectifs du système sont :
+\begin{itemize}
+    \item Permettre aux étudiants de remplir des évaluations anonymes
+    \item Fournir aux enseignants un tableau de bord interactif avec leurs statistiques
+    \item Garantir la confidentialité et l'intégrité des données
+    \item Offrir une interface responsive (desktop et mobile)
+\end{itemize}
+
+\subsection{Méthodologie}
+
+Le projet a été réalisé en suivant une approche itérative comprenant :
+\begin{enumerate}
+    \item Analyse des cas d'utilisation
+    \item Conception MVC (Modèle-Vue-Contrôleur)
+    \item Modélisation avec UML (diagrammes de séquence, classes, états-transitions)
+    \item Prototypage des interfaces utilisateur
+    \item Modélisation des processus métier avec BPMN
+\end{enumerate}
+
+\newpage
+
+\section{Diagramme de cas d'utilisation}
+
+Le diagramme de cas d'utilisation global identifie les trois acteurs principaux du système :
+
+\subsection{Acteurs}
+
+\begin{itemize}
+    \item \textbf{Étudiant} : Remplit les évaluations de manière anonyme
+    \item \textbf{Enseignant} : Consulte ses résultats d'évaluation via un tableau de bord
+    \item \textbf{Administrateur} : Gère le système, configure les évaluations, et accède aux statistiques globales
+\end{itemize}
+
+\subsection{Cas d'utilisation identifiés}
+
+\begin{enumerate}
+    \item S'authentifier (tous les acteurs)
+    \item Remplir une évaluation (Étudiant)
+    \item Consulter l'historique des évaluations (Étudiant)
+    \item Visualiser le tableau de bord (Enseignant)
+    \item Consulter les statistiques détaillées (Enseignant)
+    \item Comparer les performances (Administrateur)
+    \item Gérer les formulaires d'évaluation (Administrateur)
+    \item Générer des rapports (Administrateur)
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Diagramme_Cas_Util}
+    \caption{Diagramme de Cas d'utilisation}
+    \label{fig:cas_util}
+\end{figure}
+
+
+\newpage
+
+\section{Analyse des cas d'utilisation avec approche MVC}
+
+Deux cas d'utilisation ont été sélectionnés pour une analyse approfondie selon l'architecture MVC.
+
+\subsection{UC1 : Remplir une évaluation}
+
+\subsubsection{Description}
+
+L'étudiant accède au système, sélectionne une évaluation en attente, remplit le formulaire de manière anonyme, et soumet son évaluation. Le système garantit l'anonymat et la possibilité de sauvegarder un brouillon.
+
+\subsubsection{Architecture MVC}
+
+\textbf{Vue (Présentation)} :
+\begin{itemize}
+    \item \texttt{VueListeEvaluations} : Affichage de la liste des évaluations
+    \item \texttt{VueFormulaireEvaluation} : Interface de saisie du formulaire
+    \item \texttt{VueConfirmation} : Écran de récapitulatif
+    \item \texttt{VueSucces} : Confirmation de soumission
+    \item \texttt{VueErreurValidation} : Affichage des erreurs
+\end{itemize}
+
+\textbf{Contrôleur (Logique métier)} :
+\begin{itemize}
+    \item \texttt{EvaluationController} : Gestion du cycle de vie de l'évaluation
+    \item Opérations : \texttt{afficherListe()}, \texttt{validerFormulaire()}, \texttt{soumettre()}
+\end{itemize}
+
+\textbf{Modèle (Données)} :
+\begin{itemize}
+    \item Services : \texttt{AnonymatService}, \texttt{ValidationService}, \texttt{NotificationService}
+    \item Entités : \texttt{Evaluation}, \texttt{Formulaire}, \texttt{Question}, \texttt{Reponse}
+\end{itemize}
+
+\subsubsection{Scénarios modélisés}
+
+Le diagramme de séquence couvre :
+\begin{enumerate}
+    \item Scénario idéal : Soumission réussie
+    \item Alternative 1 : Erreurs de validation
+    \item Alternative 2 : Sauvegarde en brouillon
+    \item Alternative 3 : Erreurs système
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Diagramme_Sequence_UC1_Remplir_Evaluation}
+    \caption{Diagramme de séquence - UC1 Remplir une évaluation}
+    \label{fig:seq_uc1}
+\end{figure}
+
+\textit{Fichiers associés : \texttt{Diagramme\_Sequence\_UC1\_Remplir\_Evaluation.puml}}
+
+\newpage
+
+\subsection{UC6 : Visualiser le tableau de bord interactif}
+
+\subsubsection{Description}
+
+L'enseignant se connecte et accède à un tableau de bord présentant ses indicateurs de performance (KPI), l'évolution de ses notes, les commentaires anonymes des étudiants, et des statistiques détaillées par cours.
+
+\subsubsection{Architecture MVC}
+
+\textbf{Vue (Présentation)} :
+\begin{itemize}
+    \item \texttt{VueTableauBord} : Dashboard principal avec KPI
+    \item \texttt{VueCommentaires} : Liste des commentaires anonymes
+    \item \texttt{VueStatistiques} : Analyses détaillées par cours
+    \item \texttt{VueFiltres} : Interface de filtrage
+\end{itemize}
+
+\textbf{Contrôleur (Logique métier)} :
+\begin{itemize}
+    \item \texttt{TableauBordController} : Orchestration de l'affichage
+    \item Opérations : \texttt{chargerDashboard()}, \texttt{appliquerFiltres()}, \texttt{exporterPDF()}
+\end{itemize}
+
+\textbf{Modèle (Données)} :
+\begin{itemize}
+    \item Services : \texttt{StatistiquesService}, \texttt{EvolutionService}, \texttt{CommentairesService}
+    \item Entités : \texttt{Enseignant}, \texttt{Cours}, \texttt{Statistique}, \texttt{KPI}
+\end{itemize}
+
+\subsubsection{Scénarios modélisés}
+
+Le diagramme de séquence couvre :
+\begin{enumerate}
+    \item Scénario idéal : Chargement du tableau de bord
+    \item Alternative 1 : Aucune donnée disponible (nouvel enseignant)
+    \item Alternative 2 : Version mobile
+    \item Alternative 3 : Application de filtres
+    \item Alternative 4 : Erreurs de chargement
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Diagramme_Sequence_UC6_Tableau_Bord}
+    \caption{Diagramme de séquence - UC6 Consulter le tableau de bord}
+    \label{fig:seq_uc6}
+\end{figure}
+
+\textit{Fichiers associés : \texttt{Diagramme\_Sequence\_UC6\_Tableau\_Bord.puml}}
+
+\newpage
+
+\section{Diagramme de classes MVC}
+
+Le diagramme de classes présente l'architecture complète du système selon le pattern MVC.
+
+\subsection{Organisation par packages}
+
+\textbf{Package Vue} :
+\begin{itemize}
+    \item 11 classes d'interface (UC1 et UC6)
+    \item Responsabilité : Présentation et interaction utilisateur
+\end{itemize}
+
+\textbf{Package Contrôleur} :
+\begin{itemize}
+    \item \texttt{EvaluationController}
+    \item \texttt{TableauBordController}
+    \item Responsabilité : Logique de coordination
+\end{itemize}
+
+\textbf{Package Modèle} :
+\begin{itemize}
+    \item 5 services métier
+    \item 9 entités du domaine
+    \item Responsabilité : Logique métier et persistance
+\end{itemize}
+
+\subsection{Relations principales}
+
+\begin{itemize}
+    \item \textbf{Dépendance} : Vue $\rightarrow$ Contrôleur $\rightarrow$ Modèle
+    \item \textbf{Association} : Entités liées (Étudiant-Évaluation, Enseignant-Cours)
+    \item \textbf{Agrégation} : Formulaire contient Questions
+    \item \textbf{Composition} : Évaluation contient Réponses
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Diagramme_Classe_MVC}
+    \caption{Diagramme de classes - Architecture MVC}
+    \label{fig:classe_mvc}
+\end{figure}
+
+\textit{Fichier associé : \texttt{Diagramme\_Classe\_MVC.puml}}
+
+\newpage
+
+\section{Prototypes d'interfaces (IHM)}
+
+Des maquettes interactives ont été créées avec PlantUML Salt pour les deux cas d'utilisation.
+
+\subsection{UC1 : Interfaces d'évaluation}
+
+\textbf{7 écrans développés :}
+\begin{enumerate}
+    \item \textbf{Liste des évaluations (Desktop)} : Vue d'ensemble avec filtres
+    \item \textbf{Formulaire d'évaluation (Desktop)} : Saisie complète avec sections
+    \item \textbf{Confirmation} : Récapitulatif avant soumission
+    \item \textbf{Succès} : Message de confirmation
+    \item \textbf{Liste des évaluations (Mobile)} : Version responsive
+    \item \textbf{Formulaire (Mobile)} : Adaptation mobile
+    \item \textbf{Erreur de validation} : Affichage des erreurs
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{IHM_UC1_Remplir_Evaluation}
+    \caption{Prototypes d'interfaces - UC1 Remplir une évaluation (7 écrans)}
+    \label{fig:ihm_uc1}
+\end{figure}
+
+\subsection{UC6 : Interfaces du tableau de bord}
+
+\textbf{8 écrans développés :}
+\begin{enumerate}
+    \item \textbf{Tableau de bord principal} : KPI, graphiques d'évolution, commentaires récents
+    \item \textbf{Tableau de bord avec filtres} : Application de filtres par période/cours
+    \item \textbf{Commentaires détaillés} : Liste paginée avec recherche
+    \item \textbf{Statistiques détaillées} : Analyse par cours et par question
+    \item \textbf{Comparaison} : Positionnement vs moyenne départementale (Admin)
+    \item \textbf{Version mobile} : Dashboard adapté mobile
+    \item \textbf{Aucune donnée} : État vide pour nouvel enseignant
+    \item \textbf{Erreur de chargement} : Gestion des erreurs
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{IHM_UC6_Tableau_Bord}
+    \caption{Prototypes d'interfaces - UC6 Tableau de bord (8 écrans)}
+    \label{fig:ihm_uc6}
+\end{figure}
+
+\subsection{Principes de conception}
+
+\begin{itemize}
+    \item \textbf{Responsive design} : Adaptation desktop/mobile
+    \item \textbf{Progressive disclosure} : Information hiérarchisée
+    \item \textbf{Feedback utilisateur} : États de validation clairs
+    \item \textbf{Accessibilité} : Contraste et lisibilité
+\end{itemize}
+
+\textit{Fichiers associés : \texttt{IHM\_UC1\_Remplir\_Evaluation.puml}, \texttt{IHM\_UC6\_Tableau\_Bord.puml}}
+
+\newpage
+
+\section{Diagramme de navigation}
+
+Le diagramme d'états-transitions modélise la navigation entre les différentes interfaces du système.
+
+\subsection{Navigation UC1 (Étudiants)}
+
+\textbf{Flux principal :}
+\begin{itemize}
+    \item Authentification $\rightarrow$ Liste évaluations
+    \item Commencer évaluation / Reprendre brouillon $\rightarrow$ Formulaire
+    \item Formulaire $\rightarrow$ Validation $\rightarrow$ Confirmation $\rightarrow$ Soumission
+    \item Branche alternative : Sauvegarde brouillon $\rightarrow$ Retour liste
+    \item Branche erreur : Validation échouée $\rightarrow$ Correction
+\end{itemize}
+
+\subsection{Navigation UC6 (Enseignants)}
+
+\textbf{Flux principal :}
+\begin{itemize}
+    \item Authentification $\rightarrow$ Tableau de bord principal
+    \item Tableau de bord $\leftrightarrow$ Filtres actifs
+    \item Tableau de bord $\rightarrow$ Commentaires détaillés
+    \item Tableau de bord $\rightarrow$ Statistiques détaillées
+    \item Tous les états $\rightarrow$ Retour au tableau de bord
+\end{itemize}
+
+\subsection{États terminaux}
+
+\begin{itemize}
+    \item Déconnexion depuis n'importe quel état
+    \item État final après soumission d'évaluation
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{Navigation_Globale}
+    \caption{Diagramme de navigation - États et transitions}
+    \label{fig:navigation}
+\end{figure}
+
+\textit{Fichier associé : \texttt{Navigation\_Globale.puml}}
+
+\newpage
+
+\section{Modélisation BPMN}
+
+Le diagramme BPMN (Business Process Model and Notation) modélise le processus complet d'évaluation avec deux acteurs principaux.
+
+\subsection{Pool 1 : Étudiants}
+
+\textbf{Processus :}
+\begin{enumerate}
+    \item Recevoir notification d'évaluation par email
+    \item Se connecter au système
+    \item Consulter liste des évaluations
+    \item Décision : Reprendre brouillon ou nouvelle évaluation
+    \item Boucle de remplissage :
+    \begin{itemize}
+        \item Remplir formulaire (questions, notes, commentaires)
+        \item Sauvegarde automatique
+        \item Validation
+        \item Si erreurs : correction
+    \end{itemize}
+    \item Afficher récapitulatif
+    \item Décision : Confirmer ou modifier
+    \item Soumettre évaluation définitive
+    \item Recevoir confirmation par email
+\end{enumerate}
+
+\subsection{Pool 2 : Université}
+
+\textbf{Processus :}
+\begin{enumerate}
+    \item Configurer période d'évaluation
+    \item Générer formulaires par cours
+    \item Envoyer notifications aux étudiants
+    \item Processus parallèle :
+    \begin{itemize}
+        \item Recevoir évaluations soumises
+        \item Contrôler intégrité des données
+        \item Anonymiser (suppression ID, hash temporel, chiffrement)
+        \item Stocker dans base anonymisée
+    \end{itemize}
+    \item À la fin de période :
+    \begin{itemize}
+        \item Agréger toutes les évaluations
+        \item Calculer statistiques (moyennes, écarts-types, distributions)
+        \item Analyser sentiments des commentaires (NLP)
+        \item Fork parallèle :
+        \begin{itemize}
+            \item Générer rapport par enseignant
+            \item Publier résultats sur tableau de bord
+        \end{itemize}
+        \item Notifier enseignants par email
+        \item Archiver données pour audit
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Points d'interaction}
+
+\begin{itemize}
+    \item \textbf{Notification} : Université $\rightarrow$ Étudiant
+    \item \textbf{Soumission} : Étudiant $\rightarrow$ Université
+    \item \textbf{Confirmation} : Université $\rightarrow$ Étudiant
+    \item \textbf{Résultats} : Université $\rightarrow$ Enseignant
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{BPMN_Processus_Evaluation}
+    \caption{Diagramme BPMN - Processus complet d'évaluation avec 2 pools}
+    \label{fig:bpmn}
+\end{figure}
+
+\textit{Fichier associé : \texttt{BPMN\_Processus\_Evaluation.puml}}
+
+\newpage
+
+\section{Aspects techniques}
+
+\subsection{Technologies utilisées}
+
+\begin{itemize}
+    \item \textbf{UML / PlantUML} : Modélisation des diagrammes
+    \item \textbf{PlantUML Salt} : Prototypage des interfaces
+    \item \textbf{Architecture MVC} : Séparation des responsabilités
+    \item \textbf{BPMN 2.0} : Modélisation des processus métier
+\end{itemize}
+
+\subsection{Garanties du système}
+
+\begin{itemize}
+    \item \textbf{Anonymat} : Suppression des identifiants, hash temporel, chiffrement
+    \item \textbf{Intégrité} : Validation des données, transactions ACID
+    \item \textbf{Disponibilité} : Sauvegarde automatique, gestion des erreurs
+    \item \textbf{Confidentialité} : Accès restreint selon les rôles
+\end{itemize}
+
+\subsection{Scalabilité}
+
+Le système est conçu pour supporter :
+\begin{itemize}
+    \item Plusieurs centaines d'étudiants par cours
+    \item Évaluations simultanées en période de pic
+    \item Archivage sur plusieurs années académiques
+    \item Analyses statistiques complexes
+\end{itemize}
+
+\newpage
+
+\section{Conclusion}
+
+\subsection{Synthèse du travail réalisé}
+
+Ce projet a permis de concevoir un système d'information complet pour l'évaluation des enseignants, en suivant une méthodologie rigoureuse et en utilisant les standards de modélisation UML et BPMN.
+
+Les livrables produits comprennent :
+\begin{enumerate}
+    \item Diagramme de cas d'utilisation global
+    \item Analyse détaillée de 2 UC avec architecture MVC
+    \item 2 diagrammes de séquence complets (scénarios idéaux et alternatives)
+    \item 1 diagramme de classes MVC (30+ classes)
+    \item 15 prototypes d'interfaces (desktop et mobile)
+    \item 1 diagramme de navigation (états-transitions)
+    \item 1 diagramme BPMN (2 pools)
+\end{enumerate}
+
+\subsection{Compétences mobilisées}
+
+\begin{itemize}
+    \item \textbf{Analyse fonctionnelle} : Identification des besoins et des acteurs
+    \item \textbf{Conception orientée objet} : Architecture MVC, séparation des responsabilités
+    \item \textbf{Modélisation UML} : Diagrammes de séquence, classes, états
+    \item \textbf{Prototypage IHM} : Conception d'interfaces utilisateur
+    \item \textbf{Modélisation de processus} : BPMN avec swimlanes
+\end{itemize}
+
+\subsection{Perspectives d'évolution}
+
+Le système pourrait être enrichi avec :
+\begin{itemize}
+    \item Intelligence artificielle pour l'analyse automatique des commentaires
+    \item Système de recommandations pour l'amélioration pédagogique
+    \item Intégration avec d'autres systèmes universitaires (LMS, RH)
+    \item Tableau de bord administratif avec analytics avancés
+    \item Module de questionnaires personnalisables
+\end{itemize}
+
+\newpage
+
+\section*{Annexes}
+
+\subsection*{Liste des fichiers livrés}
+
+\begin{enumerate}
+    \item \texttt{Diagramme\_Cas\_Util.puml} - Diagramme de cas d'utilisation
+    \item \texttt{Diagramme\_Sequence\_UC1\_Remplir\_Evaluation.puml} - Séquence UC1
+    \item \texttt{Diagramme\_Sequence\_UC6\_Tableau\_Bord.puml} - Séquence UC6
+    \item \texttt{Diagramme\_Classe\_MVC.puml} - Diagramme de classes
+    \item \texttt{IHM\_UC1\_Remplir\_Evaluation.puml} - Prototypes IHM UC1
+    \item \texttt{IHM\_UC6\_Tableau\_Bord.puml} - Prototypes IHM UC6
+    \item \texttt{Navigation\_Globale.puml} - Diagramme de navigation
+    \item \texttt{BPMN\_Processus\_Evaluation.puml} - Diagramme BPMN
+    \item \texttt{Analyse\_UC\_MVC.md} - Documentation de l'analyse MVC
+    \item \texttt{Documentation\_IHM.md} - Documentation des interfaces
+\end{enumerate}
+
+\subsection*{Références}
+
+\begin{itemize}
+    \item UML 2.5 Specification - Object Management Group (OMG)
+    \item BPMN 2.0 Specification - Object Management Group (OMG)
+    \item PlantUML Documentation - \url{https://plantuml.com}
+    \item Design Patterns - Gang of Four (GoF)
+    \item Model-View-Controller Pattern - Trygve Reenskaug
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,468 @@
+@startuml "IHM - UC1 : Remplir une évaluation"
+
+title Prototypes d'interface - UC1 : Remplir une évaluation
+
+'═══════════════════════════════════════════════════════════════
+' ÉCRAN 1 : Liste des évaluations disponibles (Desktop)
+'═══════════════════════════════════════════════════════════════
+
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | <&person> Jean Dupont (Étudiant) | [<&account-logout> Déconnexion]
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Historique | Notifications (3) | Aide
+    }
+  }
+  ==
+  {+
+    {/ <b>Mes évaluations en attente</b> | }
+    ==
+    .
+    {#
+      <b>Enseignant</b> | <b>Cours</b> | <b>Date limite</b> | <b>Statut</b> | <b>Action</b>
+      Prof. Martin | Mathématiques Avancées | 15/01/2026 | <color:orange>À compléter | [<&play-circle> Commencer]
+      Prof. Dubois | Informatique | 20/01/2026 | <color:blue>Brouillon (45%) | [<&pencil> Reprendre]
+      Prof. Laurent | Physique | 25/01/2026 | <color:red>Non commencée | [<&play-circle> Commencer]
+      Prof. Bernard | Chimie | 30/01/2026 | <color:red>Non commencée | [<&play-circle> Commencer]
+    }
+    .
+    ==
+    {
+      <i><&info> Vous avez <b>4 évaluations</b> en attente. | [ <&reload> Actualiser ]
+    }
+  }
+  ==
+  {
+    <size:10><i>© 2026 - Système d'évaluation | Aide | Contact
+  }
+}
+}
+@enduml
+
+'═══════════════════════════════════════════════════════════════
+' ÉCRAN 2 : Formulaire d'évaluation (Desktop) - Étape 1
+'═══════════════════════════════════════════════════════════════
+
+@startuml "Écran 2 - Formulaire d'évaluation"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | <&person> Jean Dupont (Étudiant) | [<&account-logout> Déconnexion]
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Historique | Notifications (3) | Aide
+    }
+  }
+  ==
+  {+
+    {
+      [<&arrow-left> Retour à la liste] | <b><size:14>Évaluation : Prof. Martin - Mathématiques Avancées</b> | 
+    }
+    ==
+    {
+      <&clock> Temps restant : <b>3 jours</b> | Progression : [========>...........] 45% | [<&document> Sauvegarder brouillon]
+    }
+    ==
+    .
+    {+
+      {
+        <b><size:12>Section 1 : Qualité de l'enseignement</b> (6 questions)
+        --
+        <b>1. La clarté des explications de l'enseignant *</b>
+        <i>Évaluez la capacité de l'enseignant à expliquer clairement les concepts
+        {
+          ( ) Très insatisfaisant (1)
+          ( ) Insatisfaisant (2)
+          (X) Moyen (3)
+          ( ) Satisfaisant (4)
+          ( ) Très satisfaisant (5)
+        }
+        --
+        <b>2. La disponibilité de l'enseignant pour répondre aux questions *</b>
+        {
+          ( ) Très insatisfaisant (1)
+          ( ) Insatisfaisant (2)
+          ( ) Moyen (3)
+          (X) Satisfaisant (4)
+          ( ) Très satisfaisant (5)
+        }
+        --
+        <b>3. L'organisation du cours *</b>
+        {
+          ( ) Très insatisfaisant (1)
+          ( ) Insatisfaisant (2)
+          ( ) Moyen (3)
+          ( ) Satisfaisant (4)
+          (X) Très satisfaisant (5)
+        }
+        --
+        <b>4. Le rythme du cours est-il adapté ? *</b>
+        {
+          ( ) Beaucoup trop lent
+          ( ) Trop lent
+          (X) Adapté
+          ( ) Trop rapide
+          ( ) Beaucoup trop rapide
+        }
+        --
+        <b>5. Commentaires libres sur l'enseignement (optionnel)</b>
+        <i>Vos commentaires sont anonymes
+        {
+          "Le professeur explique très bien les concepts"
+          "mais parfois un peu trop vite pour certains sujets"
+          "                                                  "
+        }
+        --
+      }
+      ==
+      {
+        <b><size:12>Section 2 : Matériel pédagogique</b> (4 questions)
+        --
+        <b>6. La qualité des supports de cours (slides, documents) *</b>
+        {
+          ( ) Très insatisfaisant (1)
+          ( ) Insatisfaisant (2)
+          ( ) Moyen (3)
+          (X) Satisfaisant (4)
+          ( ) Très satisfaisant (5)
+        }
+        --
+        <b>7. Les exercices proposés sont-ils pertinents ? *</b>
+        {
+          ( ) Pas du tout
+          ( ) Peu pertinent
+          (X) Pertinent
+          ( ) Très pertinent
+        }
+        --
+        <i><color:gray>... 2 questions restantes
+        --
+      }
+      ==
+      {
+        <b><size:12>Section 3 : Évaluation globale</b> (Non commencée)
+        --
+        <i><color:gray>Cette section contient 3 questions
+      }
+    }
+    .
+    ==
+    {
+      <&warning> <i>Les champs marqués d'un astérisque (*) sont obligatoires | 
+      [<&document> Sauvegarder brouillon] | [<&x> Annuler] | [<&arrow-right> Continuer]
+    }
+  }
+  ==
+  {
+    <size:10><i>© 2026 - Vos réponses sont <b>100% anonymes</b> et <b>confidentielles</b>
+  }
+}
+@enduml
+
+'═══════════════════════════════════════════════════════════════
+' ÉCRAN 3 : Confirmation avant soumission
+'═══════════════════════════════════════════════════════════════
+
+@startuml "Écran 3 - Confirmation de soumission"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | <&person> Jean Dupont (Étudiant) | [<&account-logout> Déconnexion]
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Historique | Notifications (3) | Aide
+    }
+  }
+  ==
+  {+
+    {
+      [<&arrow-left> Retour au formulaire] | <b><size:14>Évaluation : Prof. Martin - Mathématiques Avancées</b> | 
+    }
+    ==
+    .
+    {+
+      <b><size:14>Récapitulatif de votre évaluation</b>
+      ==
+      {
+        <&check> Toutes les questions obligatoires ont été remplies
+        --
+        <b>Résumé par section :</b>
+        • Section 1 : Qualité de l'enseignement - <color:green>6/6 questions
+        • Section 2 : Matériel pédagogique - <color:green>4/4 questions
+        • Section 3 : Évaluation globale - <color:green>3/3 questions
+        --
+        <b>Commentaires ajoutés :</b>
+        • 2 commentaires libres
+        --
+        <b>Note globale attribuée :</b> 4.2/5
+      }
+      ==
+      {+
+        <size:12><color:orange><b>⚠ ATTENTION</b>
+        --
+        Une fois soumise, vous <b>ne pourrez plus modifier</b> cette évaluation.
+        --
+        Vos réponses resteront <b>100% anonymes</b>.
+        L'enseignant ne pourra jamais identifier qui a donné cette évaluation.
+      }
+      ==
+      {
+        [ ] <i>Je certifie avoir rempli cette évaluation de manière honnête et objective
+      }
+    }
+    .
+    ==
+    {
+      | [<&x> Annuler] | [<&pencil> Modifier] | | [<&circle-check> <b>Soumettre l'évaluation</b>]
+    }
+  }
+  ==
+  {
+    <size:10><i>© 2026 - Système d'évaluation
+  }
+}
+@enduml
+
+'═══════════════════════════════════════════════════════════════
+' ÉCRAN 4 : Confirmation de soumission réussie
+'═══════════════════════════════════════════════════════════════
+
+@startuml "Écran 4 - Soumission réussie"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | <&person> Jean Dupont (Étudiant) | [<&account-logout> Déconnexion]
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Historique | Notifications (3) | Aide
+    }
+  }
+  ==
+  {+
+    .
+    {+
+      {
+        .
+        .
+        <size:18><color:green><b>✓ Évaluation soumise avec succès !</b>
+        .
+        Merci pour votre contribution à l'amélioration de la qualité de l'enseignement.
+        .
+        {
+          <b>Évaluation :</b> Prof. Martin - Mathématiques Avancées
+          <b>Date de soumission :</b> 11 janvier 2026 à 14:35
+          <b>Référence :</b> EVAL-2026-001234
+        }
+        .
+        <i>Un email de confirmation a été envoyé à votre adresse.
+        .
+        .
+      }
+      ==
+      {
+        <b>Prochaines étapes :</b>
+        • Vous pouvez consulter votre historique d'évaluations
+        • Il vous reste <b>3 évaluations</b> en attente
+      }
+    }
+    .
+    ==
+    {
+      | [<&arrow-left> Retour à la liste] | | [<&document> Voir l'historique]
+    }
+  }
+  ==
+  {
+    <size:10><i>© 2026 - Système d'évaluation
+  }
+}
+@enduml
+
+'═══════════════════════════════════════════════════════════════
+' ÉCRAN 5 : Version Mobile - Liste des évaluations
+'═══════════════════════════════════════════════════════════════
+
+@startuml "Écran 5 - Mobile : Liste des évaluations"
+salt
+{
+  {+
+    {* <b>Évaluations</b> | <&person> | <&menu> }
+  }
+  ==
+  <i><&info> 4 évaluations en attente
+  ==
+  {+
+    {^
+      <b>Prof. Martin</b>
+      Mathématiques Avancées
+      <color:orange>⏳ À compléter (45%)
+      <i>Expire dans 3 jours
+      [<&play-circle> Reprendre]
+    }
+    --
+    {^
+      <b>Prof. Dubois</b>
+      Informatique
+      <color:red>❌ Non commencée
+      <i>Expire dans 9 jours
+      [<&play-circle> Commencer]
+    }
+    --
+    {^
+      <b>Prof. Laurent</b>
+      Physique
+      <color:red>❌ Non commencée
+      <i>Expire dans 14 jours
+      [<&play-circle> Commencer]
+    }
+    --
+    {^
+      <b>Prof. Bernard</b>
+      Chimie
+      <color:red>❌ Non commencée
+      <i>Expire dans 19 jours
+      [<&play-circle> Commencer]
+    }
+  }
+  ==
+  {
+    {T
+      + <&home> Accueil | <&list-rich> Évaluations | <&clock> Historique | <&person> Profil
+    }
+  }
+}
+@enduml
+
+'═══════════════════════════════════════════════════════════════
+' ÉCRAN 6 : Version Mobile - Formulaire d'évaluation
+'═══════════════════════════════════════════════════════════════
+
+@startuml "Écran 6 - Mobile : Formulaire"
+salt
+{
+  {+
+    {* [<&arrow-left>] | <b>Évaluation</b> | [<&document>] }
+  }
+  ==
+  {
+    <b>Prof. Martin</b>
+    Mathématiques Avancées
+  }
+  {
+    [====>......] 45%
+  }
+  ==
+  {+
+    {^
+      <b><size:11>Section 1/3</b>
+      <i>Qualité de l'enseignement
+      --
+      <b>1. Clarté des explications *</b>
+      {
+        ( ) 1 - Très insatisfaisant
+        ( ) 2 - Insatisfaisant
+        (X) 3 - Moyen
+        ( ) 4 - Satisfaisant
+        ( ) 5 - Très satisfaisant
+      }
+      --
+      <b>2. Disponibilité *</b>
+      {
+        ( ) 1 - Très insatisfaisant
+        ( ) 2 - Insatisfaisant
+        ( ) 3 - Moyen
+        (X) 4 - Satisfaisant
+        ( ) 5 - Très satisfaisant
+      }
+      --
+      <b>3. Organisation du cours *</b>
+      {
+        ( ) 1 - Très insatisfaisant
+        ( ) 2 - Insatisfaisant
+        ( ) 3 - Moyen
+        ( ) 4 - Satisfaisant
+        (X) 5 - Très satisfaisant
+      }
+      --
+      <i>Faites défiler pour plus...
+    }
+  }
+  ==
+  {
+    [<&x> Annuler] | [<&document> Brouillon] | [<&arrow-right> Suivant]
+  }
+}
+@enduml
+
+'═══════════════════════════════════════════════════════════════
+' ÉCRAN 7 : Erreur de validation (questions manquantes)
+'═══════════════════════════════════════════════════════════════
+
+@startuml "Écran 7 - Erreur de validation"
+salt
+{+
+  <b><size:16>Système d'évaluation des enseignants</b> | <&person> Jean Dupont (Étudiant) | [<&account-logout> Déconnexion]
+  {+
+    {T
+      + <b>Tableau de bord</b> | Mes évaluations | Historique | Notifications (3) | Aide
+    }
+  }
+  ==
+  {+
+    {
+      [<&arrow-left> Retour à la liste] | <b><size:14>Évaluation : Prof. Martin - Mathématiques Avancées</b> | 
+    }
+    ==
+    {+
+      <color:red><b>❌ Formulaire incomplet</b>
+      --
+      Veuillez remplir tous les champs obligatoires avant de soumettre :
+      --
+      • <b>Section 1, Question 5</b> : Réponse manquante
+      • <b>Section 2, Question 8</b> : Réponse manquante
+      • <b>Section 3, Question 11</b> : Réponse manquante
+      --
+      [<&arrow-circle-down> Aller à la première question manquante]
+    }
+    ==
+    {+
+      {
+        <b><size:12>Section 1 : Qualité de l'enseignement</b>
+        --
+        <b>1. La clarté des explications de l'enseignant *</b> <color:green>✓
+        {
+          (X) Moyen (3)
+        }
+        --
+        <b>5. Note globale de cette section *</b> <color:red><b>⚠ Obligatoire</b>
+        <color:red>Cette question nécessite une réponse
+        {
+          ( ) Très insatisfaisant (1)
+          ( ) Insatisfaisant (2)
+          ( ) Moyen (3)
+          ( ) Satisfaisant (4)
+          ( ) Très satisfaisant (5)
+        }
+      }
+    }
+    .
+    ==
+    {
+      | [<&x> Annuler] | [<&document> Sauvegarder brouillon] | [<&circle-check> Soumettre]
+    }
+  }
+}
+@enduml
+
+@startuml "Navigation Map"
+note as N1
+  <b>Flux de navigation UC1</b>
+  ──────────────────────
+  1. Liste des évaluations → 2. Formulaire
+  2. Formulaire → 3. Confirmation
+  3. Confirmation → 4. Succès
+  2. Formulaire → 7. Erreur validation
+  7. Erreur → 2. Formulaire (correction)
+  
+  <b>Version mobile :</b>
+  5. Liste mobile → 6. Formulaire mobile
+end note
+@enduml
